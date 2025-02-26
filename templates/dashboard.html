@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RSI Trading Bot Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>RSI Trading Bot Dashboard</h1>
+    <div class="card mt-4">
+        <div class="card-header">
+            Bot Status
+        </div>
+        <div class="card-body">
+            <p><strong>Symbol:</strong> {{ status.symbol }}</p>
+            <p><strong>In Position:</strong> {{ status.in_position }}</p>
+            <p><strong>Total Profit:</strong> {{ status.total_profit }}</p>
+            <p><strong>Data Points Collected:</strong> {{ status.data_points }}</p>
+        </div>
+    </div>
+    <div class="mt-4">
+        <button id="start-btn" class="btn btn-success">Start Bot</button>
+        <button id="stop-btn" class="btn btn-danger">Stop Bot</button>
+    </div>
+</div>
+
+<!-- jQuery for AJAX calls -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    // AJAX call to start the bot
+    $('#start-btn').click(function(){
+        $.post('/start', function(data){
+            alert(data.status);
+            location.reload();
+        });
+    });
+    // AJAX call to stop the bot
+    $('#stop-btn').click(function(){
+        $.post('/stop', function(data){
+            alert(data.status);
+            location.reload();
+        });
+    });
+</script>
+</body>
+</html>
