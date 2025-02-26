@@ -19,10 +19,11 @@ bot = RSITradingBot(
 @app.route('/')
 def dashboard():
     """
-    Render the dashboard template showing the current status of the bot.
+    Render the dashboard template showing the current status of the bot and recent logs.
     """
     status = bot.get_status()
-    return render_template('dashboard.html', status=status)
+    logs = bot.get_logs(100)  # Get the last 100 log messages
+    return render_template('dashboard.html', status=status, logs=logs)
 
 @app.route('/start', methods=['POST'])
 def start_bot():
@@ -52,6 +53,13 @@ def status():
     API endpoint to return the current status of the bot.
     """
     return jsonify(bot.get_status()), 200
+
+@app.route('/logs', methods=['GET'])
+def logs():
+    """
+    API endpoint to return the latest logs from the trading bot.
+    """
+    return jsonify(bot.get_logs(100)), 200
 
 if __name__ == '__main__':
     # Run Flask app in debug mode for development

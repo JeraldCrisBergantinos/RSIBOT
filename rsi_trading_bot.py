@@ -29,36 +29,44 @@ class RSITradingBot:
         self.in_position = False
         self.total_profit = 0.0
         self.running = False
+        self.logs = []  # List to store log messages
 
         # WebSocket object; will be created in start()
         self.ws = None
 
+    def log(self, message):
+        """
+        Log a message by appending it to the logs list and printing it.
+        """
+        self.logs.append(message)
+        print(message)
+
     def order(self, side, order_type=ORDER_TYPE_MARKET):
         """
         Place an order on Binance using the test order endpoint.
-        In production, you would switch to create_order.
+        In production, switch to create_order.
         """
         try:
-            print(f"Sending {side} order for {self.trade_quantity} {self.symbol}")
+            self.log(f"Sending {side} order for {self.trade_quantity} {self.symbol}")
             order = self.client.create_test_order(
                 symbol=self.symbol,
                 side=side,
                 type=order_type,
                 quantity=self.trade_quantity
             )
-            print("Order response:", order)
+            self.log("Order response: " + str(order))
             return True
         except Exception as e:
-            print("Exception occurred during order:", e)
+            self.log("Exception occurred during order: " + str(e))
             return False
 
     def on_open(self, ws):
         """Callback when WebSocket connection is opened."""
-        print("WebSocket connection opened.")
+        self.log("WebSocket connection opened.")
 
     def on_close(self, ws):
         """Callback when WebSocket connection is closed."""
-        print("WebSocket connection closed.")
+        self.log("WebSocket connection closed.")
 
     def on_message(self, ws, message):
         """
@@ -73,37 +81,37 @@ class RSITradingBot:
 
         if is_candle_closed and close is not None:
             close_price = float(close)
-            print(f"Candle closed at {close_price}")
+            self.log(f"Candle closed at {close_price}")
             self.closes.append(close_price)
 
-            # Only compute RSI if we have enough data points
+            # Only compute RSI if enough data points are available
             if len(self.closes) > self.rsi_period:
                 np_closes = np.array(self.closes)
                 rsi = talib.RSI(np_closes, self.rsi_period)
                 last_rsi = rsi[-1]
-                print(f"Computed RSI: {last_rsi}")
+                self.log(f"Computed RSI: {last_rsi}")
 
                 # Execute trading logic based on RSI thresholds
                 if last_rsi > self.overbought:
                     if self.in_position:
-                        print("RSI indicates overbought - executing SELL order.")
+                        self.log("RSI indicates overbought - executing SELL order.")
                         if self.order(SIDE_SELL):
                             self.in_position = False
                             profit = close_price * self.trade_quantity
                             self.total_profit += profit
                     else:
-                        print("RSI overbought but no position held; no action taken.")
+                        self.log("RSI overbought but no position held; no action taken.")
                 elif last_rsi < self.oversold:
                     if not self.in_position:
-                        print("RSI indicates oversold - executing BUY order.")
+                        self.log("RSI indicates oversold - executing BUY order.")
                         if self.order(SIDE_BUY):
                             self.in_position = True
                             profit = close_price * self.trade_quantity
                             self.total_profit -= profit
                     else:
-                        print("RSI oversold but already in position; no action taken.")
+                        self.log("RSI oversold but already in position; no action taken.")
 
-            print(f"Total Profit: {self.total_profit}")
+            self.log(f"Total Profit: {self.total_profit}")
 
     def start(self):
         """
@@ -116,18 +124,17 @@ class RSITradingBot:
             on_close=self.on_close,
             on_message=self.on_message
         )
-        # Run the WebSocket in a separate thread to avoid blocking the main thread
         ws_thread = threading.Thread(target=self.ws.run_forever)
         ws_thread.daemon = True
         ws_thread.start()
-        print("RSI Trading Bot started.")
+        self.log("RSI Trading Bot started.")
 
     def stop(self):
         """Stop the trading bot and close the WebSocket connection."""
         if self.ws:
             self.ws.close()
         self.running = False
-        print("RSI Trading Bot stopped.")
+        self.log("RSI Trading Bot stopped.")
 
     def get_status(self):
         """
@@ -140,3 +147,9 @@ class RSITradingBot:
             "total_profit": self.total_profit,
             "data_points": len(self.closes)
         }
+
+    def get_logs(self, limit=100):
+        """
+        Retrieve the latest log messages, up to a specified limit.
+        """
+        return self.logs[-limit:]

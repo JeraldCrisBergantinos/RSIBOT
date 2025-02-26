@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <title>RSI Trading Bot Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        /* Style for a scrollable logs container */
+        #logs-container {
+            max-height: 300px;
+            overflow-y: scroll;
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -17,6 +28,14 @@
             <p><strong>In Position:</strong> {{ status.in_position }}</p>
             <p><strong>Total Profit:</strong> {{ status.total_profit }}</p>
             <p><strong>Data Points Collected:</strong> {{ status.data_points }}</p>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">
+            Logs
+        </div>
+        <div class="card-body" id="logs-container">
+            <pre>{{ logs|join('\n') }}</pre>
         </div>
     </div>
     <div class="mt-4">
@@ -42,6 +61,14 @@
             location.reload();
         });
     });
+
+    // Poll the /logs endpoint every 5 seconds to refresh the logs section
+    setInterval(function(){
+        $.get('/logs', function(data){
+            let logsText = data.join('\n');
+            $('#logs-container').html('<pre>' + logsText + '</pre>');
+        });
+    }, 5000);
 </script>
 </body>
 </html>
