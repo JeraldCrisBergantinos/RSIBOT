@@ -1,15 +1,21 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template
 from rsi_trading_bot import RSITradingBot
-import config  # Ensure this file contains your API_KEY and API_SECRET
+
+# Load environment variables from .env file
+load_dotenv()
+api_key = os.getenv("API_KEY")
+api_secret = os.getenv("API_SECRET")
 
 app = Flask(__name__)
 
-# Initialize the trading bot with appropriate configuration
+# Initialize the trading bot using environment variables for secure API credentials
 bot = RSITradingBot(
     symbol='ETHUSDT',
     trade_quantity=0.006,
-    api_key=config.API_KEY,
-    api_secret=config.API_SECRET,
+    api_key=api_key,
+    api_secret=api_secret,
     rsi_period=14,
     overbought=70,
     oversold=30,
