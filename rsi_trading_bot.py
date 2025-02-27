@@ -80,7 +80,6 @@ class RSITradingBot:
         """
         json_message = json.loads(message)
         candle = json_message.get('k', {})
-
         is_candle_closed = candle.get('x', False)
         close = candle.get('c', None)
 
@@ -94,12 +93,12 @@ class RSITradingBot:
                 np_closes = np.array(self.closes)
                 rsi = talib.RSI(np_closes, self.rsi_period)
                 last_rsi = rsi[-1]
-                # Capture the latest RSI and current timestamp
+                # Update the latest RSI and timestamp (using a full datetime format)
                 self.latest_rsi = last_rsi
-                self.latest_rsi_timestamp = datetime.now().strftime("%H:%M:%S")
+                self.latest_rsi_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.log(f"Computed RSI: {last_rsi} at {self.latest_rsi_timestamp}")
 
-                # Execute trading logic based on RSI thresholds
+                # Trading logic based on RSI thresholds...
                 if last_rsi > self.overbought:
                     if self.in_position:
                         self.log("RSI indicates overbought - executing SELL order.")
@@ -161,6 +160,8 @@ class RSITradingBot:
 
     def get_logs(self, limit=100):
         """
-        Retrieve the latest log messages, up to a specified limit.
+        #Retrieve the latest log messages, up to a specified limit.
+        Retrieve all log messages.
         """
-        return self.logs[-limit:]
+        #return self.logs[-limit:]
+        return self.logs

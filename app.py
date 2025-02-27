@@ -63,9 +63,12 @@ def status():
 @app.route('/logs', methods=['GET'])
 def logs():
     """
-    API endpoint to return the latest logs from the trading bot.
+    #API endpoint to return the latest logs from the trading bot.
+    API endpoint to return all logs from the trading bot.
     """
-    return jsonify(bot.get_logs(100)), 200
+    #return jsonify(bot.get_logs(100)), 200
+    return jsonify(bot.get_logs()), 200
 
 if __name__ == '__main__':
+    # Run Flask app in debug mode for development
     app.run(debug=True)

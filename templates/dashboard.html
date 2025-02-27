@@ -18,41 +18,45 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1>RSI Trading Bot Dashboard</h1>
-    <div class="card mt-4">
-        <div class="card-header">
-            Bot Status
-        </div>
-        <div class="card-body">
-            <p><strong>Symbol:</strong> <span id="symbol">{{ status.symbol }}</span></p>
-            <p><strong>In Position:</strong> <span id="in_position">{{ status.in_position }}</span></p>
-            <p><strong>Total Profit:</strong> <span id="total_profit">{{ status.total_profit }}</span></p>
-            <p><strong>Data Points Collected:</strong> <span id="data_points">{{ status.data_points }}</span></p>
-        </div>
+  <h1>RSI Trading Bot Dashboard</h1>
+  <div class="row">
+    <!-- Left Column: Bot Status, Logs, Controls -->
+    <div class="col-md-6">
+      <div class="card mt-4">
+          <div class="card-header">Bot Status</div>
+          <div class="card-body">
+              <p><strong>Symbol:</strong> <span id="symbol">{{ status.symbol }}</span></p>
+              <p><strong>In Position:</strong> <span id="in_position">{{ status.in_position }}</span></p>
+              <p><strong>Total Profit:</strong> <span id="total_profit">{{ status.total_profit }}</span></p>
+              <p><strong>Data Points Collected:</strong> <span id="data_points">{{ status.data_points }}</span></p>
+              <p><strong>Current RSI:</strong> <span id="current_rsi">{{ status.current_rsi }}</span> 
+              <small>(as of <span id="rsi_timestamp">{{ status.timestamp if status.timestamp else 'No Data' }}</span>)</small></p>              
+          </div>
+      </div>
+      <div class="card mt-4">
+          <div class="card-header">Logs</div>
+          <div class="card-body" id="logs-container">
+              <pre>{{ logs|join('\n') }}</pre>
+          </div>
+      </div>
+      <div class="mt-4">
+          <button id="start-btn" class="btn btn-success">Start Bot</button>
+          <button id="stop-btn" class="btn btn-secondary">Stop Bot</button>
+      </div>
     </div>
-    <div class="card mt-4">
-        <div class="card-header">
-            Logs
-        </div>
-        <div class="card-body" id="logs-container">
-            <pre>{{ logs|join('\n') }}</pre>
-        </div>
+    <!-- Right Column: RSI Graph -->
+    <div class="col-md-6">
+        <div class="card mt-4">
+            <div class="card-header">Real-Time RSI Graph</div>
+            <div class="card-body" style="overflow-x: auto;">
+              <!-- Set a fixed width so that if there are many points, it will scroll -->
+              <div style="width: 1200px;">
+                <canvas id="rsiChart" width="1200" height="300"></canvas>
+              </div>
+            </div>
+        </div>          
     </div>
-    <div class="mt-4">
-        <!-- Initially, set the Start Bot button to green and Stop Bot button to grey -->
-        <button id="start-btn" class="btn btn-success">Start Bot</button>
-        <button id="stop-btn" class="btn btn-secondary">Stop Bot</button>
-    </div>
-</div>
-
-<!-- In your dashboard.html, add a canvas element for the RSI graph -->
-<div class="card mt-4">
-    <div class="card-header">
-        Real-Time RSI Graph
-    </div>
-    <div class="card-body">
-        <canvas id="rsiChart" width="400" height="150"></canvas>
-    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -108,10 +112,12 @@
         rsiChart.data.labels.push(timestamp);
         rsiChart.data.datasets[0].data.push(rsiValue);
         // Optionally, limit number of data points to show
+        /*
         if (rsiChart.data.labels.length > 50) {
             rsiChart.data.labels.shift();
             rsiChart.data.datasets[0].data.shift();
         }
+        */
         rsiChart.update();
     }
 
@@ -124,6 +130,7 @@
                 updateRSIChart(data.timestamp, data.current_rsi);
                 // Also update a dedicated RSI display element if you have one
                 $('#current_rsi').text(data.current_rsi);
+                $('#rsi_timestamp').text(data.timestamp);
             }
         });
     }, 5000);
