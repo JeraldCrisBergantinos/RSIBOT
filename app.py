@@ -68,5 +68,4 @@ def logs():
     return jsonify(bot.get_logs(100)), 200
 
 if __name__ == '__main__':
-    # Run Flask app in debug mode for development
     app.run(debug=True)

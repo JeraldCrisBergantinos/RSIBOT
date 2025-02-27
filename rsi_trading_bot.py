@@ -3,6 +3,7 @@ import threading
 import websocket
 import talib
 import numpy as np
+from datetime import datetime
 from binance.client import Client
 from binance.enums import *
 
@@ -30,6 +31,10 @@ class RSITradingBot:
         self.total_profit = 0.0
         self.running = False
         self.logs = []  # List to store log messages
+
+        # Attributes to store the latest RSI and its timestamp
+        self.latest_rsi = None
+        self.latest_rsi_timestamp = None
 
         # WebSocket object; will be created in start()
         self.ws = None
@@ -89,7 +94,10 @@ class RSITradingBot:
                 np_closes = np.array(self.closes)
                 rsi = talib.RSI(np_closes, self.rsi_period)
                 last_rsi = rsi[-1]
-                self.log(f"Computed RSI: {last_rsi}")
+                # Capture the latest RSI and current timestamp
+                self.latest_rsi = last_rsi
+                self.latest_rsi_timestamp = datetime.now().strftime("%H:%M:%S")
+                self.log(f"Computed RSI: {last_rsi} at {self.latest_rsi_timestamp}")
 
                 # Execute trading logic based on RSI thresholds
                 if last_rsi > self.overbought:
@@ -139,14 +147,16 @@ class RSITradingBot:
     def get_status(self):
         """
         Retrieve the current status of the bot including trading position,
-        total profit, data points collected, and running state.
+        total profit, data points collected, running state, latest RSI value, and its timestamp.
         """
         return {
             "symbol": self.symbol,
             "in_position": self.in_position,
             "total_profit": self.total_profit,
             "data_points": len(self.closes),
-            "running": self.running
+            "running": self.running,
+            "current_rsi": self.latest_rsi,
+            "timestamp": self.latest_rsi_timestamp
         }
 
     def get_logs(self, limit=100):

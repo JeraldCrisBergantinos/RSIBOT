@@ -45,6 +45,90 @@
     </div>
 </div>
 
+<!-- In your dashboard.html, add a canvas element for the RSI graph -->
+<div class="card mt-4">
+    <div class="card-header">
+        Real-Time RSI Graph
+    </div>
+    <div class="card-body">
+        <canvas id="rsiChart" width="400" height="150"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Setup the RSI chart with Chart.js
+    const ctx = document.getElementById('rsiChart').getContext('2d');
+    const rsiChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [], // timestamps will go here
+            datasets: [{
+                label: 'RSI',
+                data: [],
+                borderColor: 'blue',
+                fill: false,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+                    title: { display: true, text: 'RSI Value' }
+                }
+            },
+            plugins: {
+                annotation: {
+                    annotations: {
+                        overbought: {
+                            type: 'line',
+                            yMin: 70,
+                            yMax: 70,
+                            borderColor: 'red',
+                            borderWidth: 1,
+                            label: { content: 'Overbought', enabled: true }
+                        },
+                        oversold: {
+                            type: 'line',
+                            yMin: 30,
+                            yMax: 30,
+                            borderColor: 'green',
+                            borderWidth: 1,
+                            label: { content: 'Oversold', enabled: true }
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Function to update RSI chart with new data
+    function updateRSIChart(timestamp, rsiValue) {
+        rsiChart.data.labels.push(timestamp);
+        rsiChart.data.datasets[0].data.push(rsiValue);
+        // Optionally, limit number of data points to show
+        if (rsiChart.data.labels.length > 50) {
+            rsiChart.data.labels.shift();
+            rsiChart.data.datasets[0].data.shift();
+        }
+        rsiChart.update();
+    }
+
+    // Example: Poll the RSI value periodically from your server
+    setInterval(function(){
+        $.get('/status', function(data){
+            // Assuming you extend your /status endpoint to also return the latest RSI
+            // For example, { ..., "current_rsi": 45.3, "timestamp": "12:34:56" }
+            if (data.current_rsi !== undefined && data.timestamp) {
+                updateRSIChart(data.timestamp, data.current_rsi);
+                // Also update a dedicated RSI display element if you have one
+                $('#current_rsi').text(data.current_rsi);
+            }
+        });
+    }, 5000);
+</script>
+
 <!-- jQuery for AJAX calls -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
