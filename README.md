@@ -61,10 +61,10 @@ The project is structured into two main components:
 
 ## Prerequisites
 
-- Python 3.7 or later
+- Python 3.12 or later (This project was made using 3.12 so I'm not sure with older versions.)
 - pip (Python package installer)
 - A Binance account (for API keys; test endpoints are used for simulated trading)
-- Optional: Docker (for containerization)
+- Optional: Docker (for containerization). I myself use GitHub Codespaces during development.
 
 ## Installation
 
@@ -102,7 +102,7 @@ The project is structured into two main components:
    pip install ta-lib
 
    # Install the python-binance library using pip.  
-   #This library is for interacting with the Binance API.
+   # This library is for interacting with the Binance API.
    python-binance
 
    # Install the python-dotenv library using pip.  
@@ -162,6 +162,7 @@ rsi-trading-bot/
 ├── bot.py                      # The original command-line RSI bot
 ├── requirements.txt            # List of dependencies
 ├── .env                        # Environment variables (API keys)
+├── config.py                   # API key and secret if using bot.py
 ├── templates/
 │   └── dashboard.html          # HTML template for the dashboard
 ├── images/
