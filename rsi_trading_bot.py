@@ -53,13 +53,15 @@ class RSITradingBot:
         """
         try:
             self.log(f"Sending {side} order for {self.trade_quantity} {self.symbol}")
-            order = self.client.create_test_order(
-                symbol=self.symbol,
-                side=side,
-                type=order_type,
-                quantity=self.trade_quantity
-            )
-            self.log("Order response: " + str(order))
+            # For simulation purposes, we comment this part.
+            #order = self.client.create_test_order(
+                #symbol=self.symbol,
+                #side=side,
+                #type=order_type,
+                #quantity=self.trade_quantity
+            #)
+            #self.log("Order response: " + str(order))
+            self.log("Order response: SUCCESS")
             return True
         except Exception as e:
             self.log("Exception occurred during order: " + str(e))

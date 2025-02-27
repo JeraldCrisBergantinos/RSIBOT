@@ -19,7 +19,12 @@ bot = RSITradingBot(
     rsi_period=14,
     overbought=70,
     oversold=30,
-    socket_url="wss://stream.binance.com:9443/ws/ethusdt@kline_1m"
+
+    # 1 minute interval
+    #socket_url="wss://stream.binance.com:9443/ws/ethusdt@kline_1m"
+
+    # For checking and demo purposes, the interval is 1 second
+    socket_url="wss://stream.binance.com:9443/ws/ethusdt@kline_1s"
 )
 
 @app.route('/')
