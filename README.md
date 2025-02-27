@@ -78,7 +78,7 @@ The project is structured into two main components:
 2. **Create a Virtual Environment and Activate It:**
 
    ```bash
-   python3 -m venv venv
+   python -m venv venv
    source venv/bin/activate  # On Windows, use: venv\Scripts\activate
    ```
 
@@ -103,7 +103,7 @@ The project is structured into two main components:
 
    # Install the python-binance library using pip.  
    # This library is for interacting with the Binance API.
-   python-binance
+   pip install python-binance
 
    # Install the python-dotenv library using pip.  
    # This library is used for loading environment variables from a .env file.
