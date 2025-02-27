@@ -139,13 +139,14 @@ class RSITradingBot:
     def get_status(self):
         """
         Retrieve the current status of the bot including trading position,
-        total profit, and data points collected.
+        total profit, data points collected, and running state.
         """
         return {
             "symbol": self.symbol,
             "in_position": self.in_position,
             "total_profit": self.total_profit,
-            "data_points": len(self.closes)
+            "data_points": len(self.closes),
+            "running": self.running
         }
 
     def get_logs(self, limit=100):

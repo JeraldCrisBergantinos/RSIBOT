@@ -24,10 +24,10 @@
             Bot Status
         </div>
         <div class="card-body">
-            <p><strong>Symbol:</strong> {{ status.symbol }}</p>
-            <p><strong>In Position:</strong> {{ status.in_position }}</p>
-            <p><strong>Total Profit:</strong> {{ status.total_profit }}</p>
-            <p><strong>Data Points Collected:</strong> {{ status.data_points }}</p>
+            <p><strong>Symbol:</strong> <span id="symbol">{{ status.symbol }}</span></p>
+            <p><strong>In Position:</strong> <span id="in_position">{{ status.in_position }}</span></p>
+            <p><strong>Total Profit:</strong> <span id="total_profit">{{ status.total_profit }}</span></p>
+            <p><strong>Data Points Collected:</strong> <span id="data_points">{{ status.data_points }}</span></p>
         </div>
     </div>
     <div class="card mt-4">
@@ -39,8 +39,9 @@
         </div>
     </div>
     <div class="mt-4">
+        <!-- Initially, set the Start Bot button to green and Stop Bot button to grey -->
         <button id="start-btn" class="btn btn-success">Start Bot</button>
-        <button id="stop-btn" class="btn btn-danger">Stop Bot</button>
+        <button id="stop-btn" class="btn btn-secondary">Stop Bot</button>
     </div>
 </div>
 
@@ -51,24 +52,51 @@
     $('#start-btn').click(function(){
         $.post('/start', function(data){
             alert(data.status);
-            location.reload();
+            // Force immediate refresh after starting/stopping
+            refreshStatus();
         });
     });
     // AJAX call to stop the bot
     $('#stop-btn').click(function(){
         $.post('/stop', function(data){
             alert(data.status);
-            location.reload();
+            refreshStatus();
         });
     });
 
-    // Poll the /logs endpoint every 5 seconds to refresh the logs section
+    // Function to refresh bot status and update UI elements
+    function refreshStatus(){
+        $.get('/status', function(data){
+            $('#symbol').text(data.symbol);
+            $('#in_position').text(data.in_position);
+            $('#total_profit').text(data.total_profit);
+            $('#data_points').text(data.data_points);
+
+            // Update button colors based on the bot running status
+            if(data.running) {
+                // Bot is running: Start button becomes grey, Stop button becomes red
+                $('#start-btn').removeClass('btn-success').addClass('btn-secondary');
+                $('#stop-btn').removeClass('btn-secondary').addClass('btn-danger');
+            } else {
+                // Bot is not running: Start button becomes green, Stop button becomes grey
+                $('#start-btn').removeClass('btn-secondary').addClass('btn-success');
+                $('#stop-btn').removeClass('btn-danger').addClass('btn-secondary');
+            }
+        });
+    }
+
+    // Poll the /status endpoint every 5 seconds for real-time updates
     setInterval(function(){
+        refreshStatus();
+        // Also refresh logs every 5 seconds
         $.get('/logs', function(data){
             let logsText = data.join('\n');
             $('#logs-container').html('<pre>' + logsText + '</pre>');
         });
     }, 5000);
+
+    // Initial status refresh on page load
+    refreshStatus();
 </script>
 </body>
 </html>
