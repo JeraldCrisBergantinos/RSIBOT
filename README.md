@@ -72,7 +72,7 @@ The project is structured into two main components:
 
    ```bash
    git clone https://github.com/JeraldCrisBergantinos/RSIBOT.git
-   cd rsi-trading-bot
+   cd RSIBOT.git
    ```
 
 2. **Create a Virtual Environment and Activate It:**
